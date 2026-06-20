@@ -1,0 +1,286 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>EnglishGame - 下载</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            background: #f5f7fa;
+            margin: 0;
+            padding: 40px 20px;
+            display: flex;
+            justify-content: center;
+        }
+        .container {
+            max-width: 800px;
+            width: 100%;
+        }
+        h1 {
+            text-align: center;
+            color: #2c3e50;
+            margin-bottom: 10px;
+        }
+        .subtitle {
+            text-align: center;
+            color: #7f8c8d;
+            margin-bottom: 40px;
+        }
+        .version-card {
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+            padding: 24px 30px;
+            margin-bottom: 24px;
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            justify-content: space-between;
+            transition: box-shadow 0.2s;
+        }
+        .version-card:hover {
+            box-shadow: 0 8px 24px rgba(0,0,0,0.12);
+        }
+        .version-info {
+            flex: 1;
+            min-width: 200px;
+        }
+        .version-tag {
+            display: inline-block;
+            background: #3498db;
+            color: white;
+            font-weight: bold;
+            font-size: 14px;
+            padding: 2px 12px;
+            border-radius: 20px;
+            margin-bottom: 8px;
+        }
+        .version-title {
+            font-size: 20px;
+            font-weight: 600;
+            color: #2c3e50;
+            margin: 4px 0;
+        }
+        .version-desc {
+            color: #555;
+            font-size: 14px;
+            margin: 6px 0 0;
+        }
+        .download-btn {
+            background: #27ae60;
+            color: white;
+            border: none;
+            padding: 10px 24px;
+            border-radius: 30px;
+            font-size: 16px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: background 0.15s;
+            white-space: nowrap;
+            margin-top: 10px;
+        }
+        .download-btn:hover {
+            background: #1e8449;
+        }
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.5);
+            justify-content: center;
+            align-items: center;
+            z-index: 999;
+        }
+        .modal-overlay.active {
+            display: flex;
+        }
+        .modal-box {
+            background: white;
+            max-width: 500px;
+            width: 90%;
+            border-radius: 20px;
+            padding: 32px 30px 24px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            animation: fadeIn 0.25s ease;
+            position: relative;
+        }
+        .modal-close {
+            position: absolute;
+            top: 14px;
+            right: 20px;
+            font-size: 28px;
+            cursor: pointer;
+            color: #aaa;
+            background: none;
+            border: none;
+        }
+        .modal-close:hover {
+            color: #333;
+        }
+        .modal-title {
+            font-size: 22px;
+            font-weight: 700;
+            margin: 0 0 8px;
+            color: #2c3e50;
+        }
+        .modal-version {
+            color: #3498db;
+            font-weight: 500;
+        }
+        .modal-body {
+            margin: 16px 0 20px;
+            color: #34495e;
+            line-height: 1.6;
+            max-height: 300px;
+            overflow-y: auto;
+        }
+        .modal-body p {
+            margin: 8px 0;
+        }
+        .modal-download-link {
+            display: inline-block;
+            background: #3498db;
+            color: white;
+            padding: 8px 20px;
+            border-radius: 30px;
+            text-decoration: none;
+            font-weight: 500;
+            margin-top: 4px;
+        }
+        .modal-download-link:hover {
+            background: #2980b9;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: scale(0.95); }
+            to { opacity: 1; transform: scale(1); }
+        }
+        @media (max-width: 600px) {
+            .version-card {
+                flex-direction: column;
+                align-items: stretch;
+            }
+            .download-btn {
+                width: 100%;
+                text-align: center;
+            }
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <h1>📘 EnglishGame</h1>
+    <p class="subtitle">选择版本下载，点击按钮查看版本详情</p>
+    <div id="version-list"></div>
+</div>
+
+<div class="modal-overlay" id="modal-overlay">
+    <div class="modal-box">
+        <button class="modal-close" id="modal-close">&times;</button>
+        <div class="modal-title" id="modal-title">v1.0.0 English Game</div>
+        <div class="modal-version" id="modal-version">v1.0.0</div>
+        <div class="modal-body" id="modal-body">
+            <p> My First application (v1.0.0) </p>
+        </div>
+        <a href="#" class="modal-download-link" id="modal-download-link" target="_blank">⬇ 立即下载</a>
+    </div>
+</div>
+
+<script>
+    // ======================== 版本数据 ============================
+    // 请根据你实际发布的版本和下载链接修改此处
+    const versions = [
+        {
+            tag: "v1.0.0",
+            title: "英语单词巩固练习 v1.0.0",
+            desc: "首个正式版本，包含完整词库（528个单词），支持答题、计分、最高分记录。",
+            downloads: {
+                apk: "https://github.com/J-E-F-F-R-E-Y/English/releases/download/v1.0.0/EnglishGame.apk",
+                exe: "https://github.com/J-E-F-F-R-E-Y/English/releases/download/v1.0.0/EnglishGame.exe",
+                deb: "https://github.com/J-E-F-F-R-E-Y/English/releases/download/v1.0.0/EnglishGame.deb"
+            }
+        }
+        // 可以添加更多版本，例如：
+        // {
+        //     tag: "v1.1.0",
+        //     title: "英语单词巩固练习 v1.1.0",
+        //     desc: "新增胜利动画和音效，增加卸载提示。",
+        //     downloads: {
+        //         apk: "https://github.com/J-E-F-F-R-E-Y/English/releases/download/v1.1.0/app-debug.apk",
+        //         exe: "https://github.com/J-E-F-F-R-E-Y/English/releases/download/v1.1.0/EnglishGame.exe",
+        //         deb: "https://github.com/J-E-F-F-R-E-Y/English/releases/download/v1.1.0/EnglishGame.deb"
+        //     }
+        // }
+    ];
+
+    const platformLabels = {
+        apk: "📱 Android APK",
+        exe: "🖥️ Windows EXE",
+        deb: "🐧 Linux DEB"
+    };
+
+    const container = document.getElementById('version-list');
+    versions.forEach((ver, index) => {
+        const card = document.createElement('div');
+        card.className = 'version-card';
+        const infoDiv = document.createElement('div');
+        infoDiv.className = 'version-info';
+        infoDiv.innerHTML = `
+            <span class="version-tag">${ver.tag}</span>
+            <div class="version-title">${ver.title}</div>
+            <div class="version-desc">${ver.desc}</div>
+        `;
+        card.appendChild(infoDiv);
+        const btn = document.createElement('button');
+        btn.className = 'download-btn';
+        btn.textContent = '📥 查看并下载';
+        btn.dataset.index = index;
+        btn.addEventListener('click', function() {
+            const idx = parseInt(this.dataset.index);
+            openModal(idx);
+        });
+        card.appendChild(btn);
+        container.appendChild(card);
+    });
+
+    const modalOverlay = document.getElementById('modal-overlay');
+    const modalClose = document.getElementById('modal-close');
+    const modalTitle = document.getElementById('modal-title');
+    const modalVersion = document.getElementById('modal-version');
+    const modalBody = document.getElementById('modal-body');
+    const modalDownloadLink = document.getElementById('modal-download-link');
+
+    function openModal(index) {
+        const ver = versions[index];
+        if (!ver) return;
+        modalTitle.textContent = ver.title;
+        modalVersion.textContent = ver.tag;
+        let bodyHTML = `<p><strong>版本介绍：</strong>${ver.desc}</p><p><strong>下载文件：</strong></p><ul style="list-style:none;padding-left:0;">`;
+        const platforms = ['apk', 'exe', 'deb'];
+        platforms.forEach(plat => {
+            if (ver.downloads[plat]) {
+                bodyHTML += `<li style="margin:6px 0;">${platformLabels[plat] || plat.toUpperCase()}：<a href="${ver.downloads[plat]}" target="_blank" style="color:#3498db;">点击下载</a></li>`;
+            }
+        });
+        bodyHTML += `</ul><p style="font-size:13px;color:#888;">点击上方链接即可直接下载文件。关闭此窗口后仍可继续下载。</p>`;
+        modalBody.innerHTML = bodyHTML;
+        let firstLink = ver.downloads.apk || ver.downloads.exe || ver.downloads.deb || '#';
+        modalDownloadLink.href = firstLink;
+        modalOverlay.classList.add('active');
+    }
+
+    function closeModal() {
+        modalOverlay.classList.remove('active');
+    }
+    modalClose.addEventListener('click', closeModal);
+    modalOverlay.addEventListener('click', function(e) {
+        if (e.target === this) closeModal();
+    });
+    document.addEventListener('keydown', function(e) {
+        if (e.key === 'Escape' && modalOverlay.classList.contains('active')) {
+            closeModal();
+        }
+    });
+</script>
+</body>
+</html>
